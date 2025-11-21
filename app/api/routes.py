@@ -1,13 +1,12 @@
-# app/api/routes.py
 from fastapi import APIRouter
-from app.api.endpoints import (
-    users_router, 
-    tasks_router, 
-    categories_router,
-    recommendations_router,
-    energy_logs_router,
-    task_history_router
-)
+
+# Importaciones directas SIN usar el archivo __init__.py
+from app.api.endpoints.users import router as users_router
+from app.api.endpoints.tasks import router as tasks_router
+from app.api.endpoints.categories import router as categories_router
+from app.api.endpoints.recommendations import router as recommendations_router
+from app.api.endpoints.energy_logs import router as energy_logs_router
+from app.api.endpoints.task_history import router as task_history_router
 
 api_router = APIRouter()
 

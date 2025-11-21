@@ -2,12 +2,20 @@ from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 from typing import List
 from uuid import UUID
+from passlib.context import CryptContext
 
 from app.database import get_db
 from app.models.database_models import User
 from app.models.pydantic_models import UserCreate, UserResponse
 
 router = APIRouter()
+
+# Configuración para hashing de contraseñas
+pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
+
+def get_password_hash(password: str) -> str:
+    """Generar hash de la contraseña"""
+    return pwd_context.hash(password)
 
 @router.get("/", response_model=List[UserResponse])
 def get_users(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
@@ -29,6 +37,10 @@ def get_user(user_id: UUID, db: Session = Depends(get_db)):
 @router.post("/", response_model=UserResponse)
 def create_user(user: UserCreate, db: Session = Depends(get_db)):
     """Crear un nuevo usuario"""
+
+    print(f"Password recibida: {user.password}")  # Debug
+    print(f"Email: {user.email}")  # Debug
+
     # Verificar si el email ya existe
     existing_user = db.query(User).filter(User.email == user.email).first()
     if existing_user:
@@ -37,9 +49,13 @@ def create_user(user: UserCreate, db: Session = Depends(get_db)):
             detail="Email already registered"
         )
     
-    # En una implementación real, aquí hashearías la contraseña
+    # Hashear la contraseña antes de guardarla
+    hashed_password = get_password_hash(user.password)
+    
+    # Crear el usuario con el hash de la contraseña
     db_user = User(
         email=user.email,
+        password_hash=hashed_password,  # ¡IMPORTANTE! Esto estaba faltando
         name=user.name,
         preferences=user.preferences,
         energy_level=user.energy_level
@@ -60,7 +76,12 @@ def update_user(user_id: UUID, user_update: UserCreate, db: Session = Depends(ge
             detail="User not found"
         )
     
-    for field, value in user_update.dict(exclude_unset=True).items():
+    # Si se está actualizando la contraseña, hashearla
+    update_data = user_update.dict(exclude_unset=True)
+    if 'password' in update_data:
+        update_data['password_hash'] = get_password_hash(update_data.pop('password'))
+    
+    for field, value in update_data.items():
         setattr(db_user, field, value)
     
     db.commit()

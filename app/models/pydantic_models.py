@@ -11,7 +11,7 @@ class UserBase(BaseModel):
     energy_level: Optional[str] = 'medium'
 
 class UserCreate(UserBase):
-    password: str
+    password: str  # Contraseña en texto plano solo para creación
 
 class UserResponse(UserBase):
     id: UUID
@@ -21,6 +21,7 @@ class UserResponse(UserBase):
     
     class Config:
         from_attributes = True
+
 
 # Task schemas (ya existentes)
 class TaskBase(BaseModel):
