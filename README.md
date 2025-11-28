@@ -731,10 +731,6 @@ Este sistema de reglas **siempre está disponible** como plan de respaldo, asegu
 - **El objetivo es predecir qué tareas merecen prioridad** porque **tú las completas eficientemente** (rápido y bien).
 - **Siempre hay un plan B**: el sistema de reglas garantiza funcionalidad desde el primer día.
 
-¡Por supuesto! Aquí tienes una sección explicativa en el mismo estilo claro y accesible, perfecta para incluir en tu documento markdown:
-
----
-
 ### 🤔 ¿Por qué usamos SGDRegressor y no otro algoritmo de Machine Learning?
 
 Al diseñar el sistema de priorización inteligente, evaluamos varias opciones de algoritmos de machine learning. Elegimos **SGDRegressor** (Stochastic Gradient Descent Regressor) no por ser el más avanzado, sino por ser el **más adecuado** para las necesidades específicas de un sistema de productividad personal. Aquí te explicamos por qué.
