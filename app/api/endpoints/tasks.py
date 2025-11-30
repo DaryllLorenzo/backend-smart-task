@@ -2,6 +2,7 @@ from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy import func
 from sqlalchemy.orm import Session
 from typing import List, Optional
+from fastapi.encoders import jsonable_encoder
 from uuid import UUID
 
 from app.database import get_db
@@ -127,11 +128,12 @@ def update_task(
     
     # Registrar cambios en el historial si hubo modificaciones
     if task_update.dict(exclude_unset=True):
+        serialized_values = jsonable_encoder(task_update.dict(exclude_unset=True))
         history_entry = TaskHistory(
             task_id=task_id,
             user_id=current_user.id,
             change_type='updated',
-            new_values=task_update.dict(exclude_unset=True),
+            new_values=serialized_values,
             change_description='Task updated'
         )
         db.add(history_entry)
