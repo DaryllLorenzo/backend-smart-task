@@ -125,3 +125,12 @@ def submit_ml_feedback(
         agent.entrenar_modelo_prioridad()
     
     return {"message": "Feedback registrado exitosamente"}
+
+@router.get("/feedback/useful", response_model=List[bool])
+def get_useful_feedback(
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_active_user)
+):
+    """Obtener todos los valores 'was_useful' del feedback de ML del usuario"""
+    feedbacks = db.query(MLFeedback).filter(MLFeedback.user_id == current_user.id).all()
+    return [f.was_useful for f in feedbacks if f.was_useful is not None]
